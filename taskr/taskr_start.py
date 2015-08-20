@@ -4,9 +4,9 @@ import argparse
 import datetime
 import logging
 import re
-import subprocess
-import threading
 import time
+
+from progressbar import ProgressBar, Timer, ETA, Bar, ReverseBar
 
 from actions import Spotify, DimScreen
 
@@ -43,7 +43,13 @@ def main():
     logging.debug('Starting a timer for %s seconds' % seconds)
     logging.debug('Task comment: %s' % args.comment)
 
-    time.sleep(seconds)
+    widgets = [Bar('>'), ' ', ETA(), ' ', ReverseBar('<')]
+    progress = ProgressBar(widgets=widgets)
+
+    for i in progress(xrange(seconds)):
+        time.sleep(1)
+
+    #time.sleep(seconds)
 
     actions = [Spotify(args.song, args.keepsong), DimScreen()]
 
@@ -58,7 +64,7 @@ def main():
     for action in actions:
         action.end()
 
-    logging.info('Task end (planned): %s' % datetime.datetime.now())
+    logging.info('Task end (actual): %s' % datetime.datetime.now())
 
 
 
