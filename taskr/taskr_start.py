@@ -31,6 +31,8 @@ def main():
                         help='increase output verbosity.')
     parser.add_argument('-d', '--debug', action='store_const', const=logging.DEBUG, dest='loglevel',
                         default=logging.WARNING, help='show debug output (even more than -v).')
+    parser.add_argument('-s', '--song', default='Bit Rush League of Legends', help='spotify search query.')
+    parser.add_argument('-k', '--keepsong', action='store_true')
 
     args = parser.parse_args()
 
@@ -43,7 +45,7 @@ def main():
 
     time.sleep(seconds)
 
-    actions = [Spotify(), DimScreen()]
+    actions = [Spotify(args.song, args.keepsong), DimScreen()]
 
     for action in actions:
         action.start()

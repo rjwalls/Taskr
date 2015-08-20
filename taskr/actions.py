@@ -16,11 +16,18 @@ class Action(object):
 
 
 class Spotify(Action):
+    def __init__(self, query, keepsong):
+        self._query = query
+        self._keepsong = keepsong
+
     def start(self):
-        p_spotify = subprocess.Popen(['spotify', 'play', 'cello'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        p_spotify = subprocess.Popen(['spotify', 'play', self._query], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         logging.debug(p_spotify.communicate())
 
     def end(self):
+        if self._keepsong:
+            return
+
         p_spotify = subprocess.Popen(['spotify', 'pause'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         logging.debug(p_spotify.communicate())
 
