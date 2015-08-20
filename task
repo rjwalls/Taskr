@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+sleep "$1"
+
+brightness 0.1
+
+#Read in a random voice line
+gshuf -n1 ~/.taskr | xargs -L1 say
+
+read -p "Press enter to end..."
+
+brightness 0.5
