@@ -1,12 +1,33 @@
 #!/usr/bin/env bash
 
-sleep "$1"
+def_brightness=0.5
+dim_step=-0.01
+#Amount of time (s) to pause between steps
+dim_pause=0.3
 
-brightness 0.1
+echo "Task start: " `date`
+
+echo "$2"
+gsleep "$1"
+
+spotify play cello
+
+for i in `seq -w $def_brightness $dim_step 0.1`
+do
+  brightness $i
+  sleep $dim_pause
+done
+
 
 #Read in a random voice line
-gshuf -n1 ~/.taskr | xargs -L1 say
+#gshuf -n1 ~/.taskr | xargs -L1 say
+
+echo "Task end (planned): " `date`
 
 read -p "Press enter to end..."
 
-brightness 0.5
+brightness $def_brightness
+
+spotify pause
+
+echo "Task end (actual): " `date`
