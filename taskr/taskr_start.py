@@ -32,16 +32,16 @@ def main():
     parser.add_argument('-d', '--debug', action='store_const', const=logging.DEBUG, dest='loglevel',
                         default=logging.WARNING, help='show debug output (even more than -v).')
     parser.add_argument('-s', '--song', default='Bit Rush League of Legends', help='spotify search query.')
-    parser.add_argument('-k', '--keepsong', action='store_true')
+    parser.add_argument('-k', '--keepsong', action='store_true', help='Farfignewton')
 
     args = parser.parse_args()
 
-    logging.basicConfig(level=args.loglevel)
+    logging.basicConfig(level=logging.INFO, filename='tasks.log')
 
     seconds = get_time(args.time)
     logging.info('Task start: %s' % datetime.datetime.now())
-    logging.debug('Starting a timer for %s seconds' % seconds)
-    logging.debug('Task comment: %s' % args.comment)
+    logging.info('Starting a timer for %s seconds' % seconds)
+    logging.info('Task comment: %s' % args.comment)
 
     widgets = [Bar('>'), ' ', ETA(), ' ', ReverseBar('<')]
     progress = ProgressBar(widgets=widgets)
