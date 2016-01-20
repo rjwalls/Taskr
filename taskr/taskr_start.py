@@ -3,6 +3,7 @@ __author__ = 'rjwalls'
 import argparse
 import datetime
 import logging
+import os
 import re
 import time
 
@@ -33,10 +34,12 @@ def main():
                         default=logging.WARNING, help='show debug output (even more than -v).')
     parser.add_argument('-s', '--song', default='Bit Rush League of Legends', help='spotify search query.')
     parser.add_argument('-k', '--keepsong', action='store_true', help='Farfignewton')
+    parser.add_argument('-l', '--logpath', default=os.path.expanduser('~/Dropbox/tasks.log'))
 
     args = parser.parse_args()
 
-    logging.basicConfig(level=logging.INFO, filename='tasks.log')
+
+    logging.basicConfig(level=logging.INFO, filename=args.logpath)
 
     seconds = get_time(args.time)
     logging.info('Task start: %s' % datetime.datetime.now())
