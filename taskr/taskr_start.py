@@ -26,7 +26,7 @@ def get_time(raw):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('time')
+    parser.add_argument('-t', '--time', default='25m')
     parser.add_argument('comment', nargs="?", default="No Comment")
     parser.add_argument('-v', '--verbose', action='store_const', const=logging.INFO, dest='loglevel',
                         help='increase output verbosity.')
