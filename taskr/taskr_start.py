@@ -2,6 +2,7 @@ __author__ = 'rjwalls'
 
 import argparse
 import datetime
+import json
 import logging
 import os
 import re
@@ -38,8 +39,21 @@ def main():
 
     args = parser.parse_args()
 
+    start = datetime.datetime.now()
 
-    logging.basicConfig(level=logging.INFO, filename=args.logpath)
+    if ":" in args.comment:
+        task_type, comment = args.comment.split(':')
+    else:
+        comment = args.comment
+        task_type = None
+
+    task = {"Type": task_type,
+            "Comment": comment,
+            "Start": str(start)}
+
+
+
+    logging.basicConfig(level=args.loglevel)
 
     seconds = get_time(args.time)
     logging.info('Task start: %s' % datetime.datetime.now())
@@ -60,14 +74,25 @@ def main():
         action.start()
 
 
-    logging.info('Task end (planned): %s' % datetime.datetime.now())
+    planned_end = datetime.datetime.now()
+    task["Planned End"] = str(planned_end)
+
+    logging.info('Task end (planned): %s' % planned_end)
 
     raw_input('Press enter to end...')
 
     for action in actions:
         action.end()
 
-    logging.info('Task end (actual): %s' % datetime.datetime.now())
+    actual_end = datetime.datetime.now()
+    task["Actual End"] = str(actual_end)
+
+    task["Duration"] = str(actual_end - start)
+
+    logging.info('Task end (actual): %s' % actual_end)
+
+    with open(args.logpath, 'a+') as f:
+        json.dump(task, f, indent=4)
 
 
 
