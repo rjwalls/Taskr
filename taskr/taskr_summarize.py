@@ -9,6 +9,7 @@ import re
 import time
 import io
 
+_description="Summarize the current day's tasks."
 
 def main():
     parser = argparse.ArgumentParser()
