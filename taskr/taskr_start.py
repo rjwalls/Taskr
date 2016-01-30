@@ -7,6 +7,7 @@ import logging
 import os
 import re
 import time
+import io
 
 from progressbar import ProgressBar, Timer, ETA, Bar, ReverseBar
 
@@ -41,17 +42,21 @@ def main():
 
     start = datetime.datetime.now()
 
-    if ":" in args.comment:
-        task_type, comment = args.comment.split(':')
-    else:
-        comment = args.comment
-        task_type = None
+    parts = args.comment.split(':')
+
+    project = "Unknown"
+    task_type = "??"
+    comment = args.comment
+
+    if len(parts) == 2:
+        project, comment = parts
+    elif len(parts) == 3:
+        project, task_type, comment = parts
 
     task = {"Type": task_type,
+            "Project": project,
             "Comment": comment,
             "Start": str(start)}
-
-
 
     logging.basicConfig(level=args.loglevel)
 
@@ -91,8 +96,34 @@ def main():
 
     logging.info('Task end (actual): %s' % actual_end)
 
+    log_exists = os.path.isfile(args.logpath)
+
     with open(args.logpath, 'a+') as f:
+        if log_exists:
+            #The whole point of this code is allow us to
+            #append another JSON dictionary (the task) to
+            #the end of the list (with reading everything in).
+
+            #Go to the end of the file
+            f.seek(-1, os.SEEK_END)
+            pos = f.tell()
+
+            #Work backward until the last "]" is found.
+            while pos > 0 and f.read(1) != "]":
+                pos -= 1
+                f.seek(pos, os.SEEK_SET)
+
+            #If we aren't at the start of the file, remove the
+            #"]" and everything after.
+            if pos > 0:
+                f.seek(pos, os.SEEK_SET)
+                f.truncate()
+            f.write(",")
+        else:
+            f.write("[")
+
         json.dump(task, f, indent=4)
+        f.write("]")
 
 
 
