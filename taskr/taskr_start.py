@@ -7,7 +7,7 @@ import logging
 import os
 import re
 import time
-import io
+
 
 from progressbar import ProgressBar, Timer, ETA, Bar, ReverseBar
 
@@ -37,6 +37,7 @@ def main():
     parser.add_argument('-s', '--song', default='Bit Rush League of Legends', help='spotify search query.')
     parser.add_argument('-k', '--keepsong', action='store_true', help='Farfignewton')
     parser.add_argument('-l', '--logpath', default=os.path.expanduser('~/Dropbox/tasks.log'))
+    parser.add_argument('-x', '--disable', action='store_true')
 
     args = parser.parse_args()
 
@@ -61,19 +62,37 @@ def main():
     logging.basicConfig(level=args.loglevel)
 
     seconds = get_time(args.time)
-    logging.info('Task start: %s' % datetime.datetime.now())
+    task_start = datetime.datetime.now()
+    logging.info('Task start: %s' % task_start)
     logging.info('Starting a timer for %s seconds' % seconds)
     logging.info('Task comment: %s' % args.comment)
+
+    print('Press Ctrl+C to end early')
 
     widgets = [Bar('>'), ' ', ETA(), ' ', ReverseBar('<')]
     progress = ProgressBar(widgets=widgets)
 
-    for i in progress(xrange(seconds)):
-        time.sleep(1)
+    broken = False
 
-    #time.sleep(seconds)
+    try:
+        for i in progress(xrange(seconds)):
+            time.sleep(1)
+            #This will make sure we break out properly if the computer goes to sleep while
+            #a task is running. Give it a small buffer (10 s) so that we don't always hit this
+            #break point
+            if (datetime.datetime.now() - task_start).total_seconds() > (seconds + 10):
+                break
+    except KeyboardInterrupt:
+        logging.debug("breaking progress loop (keyboard interrupt)")
+        broken = True
 
-    actions = [Spotify(args.song, args.keepsong), DimScreen()]
+
+    # don't execute the actions if they are disable by the user
+    # or we receive a sigint
+    if args.disable or broken:
+        actions = []
+    else:
+        actions = [Spotify(args.song, args.keepsong), DimScreen()]
 
     for action in actions:
         action.start()
