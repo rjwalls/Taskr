@@ -45,13 +45,14 @@ class DimScreen(threading.Thread, Action):
     def end(self):
         self._stop.set()
         self.join()
-        subprocess.Popen(['brightness', '0.5']).wait()
+        #todo: set brightness back to what it was previously
+        subprocess.Popen(['brightness', '0.75']).wait()
 
     def stopped(self):
         return self._stop.isSet()
 
     def run(self):
-        for step in numpy.arange(0.5, 0.1, -0.01):
+        for step in numpy.arange(0.75, 0.1, -0.01):
             subprocess.Popen(['brightness', str(step)])
 
             if self.stopped():

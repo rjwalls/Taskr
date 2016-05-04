@@ -92,7 +92,10 @@ def main():
     if args.disable or broken:
         actions = []
     else:
-        actions = [Spotify(args.song, args.keepsong), DimScreen()]
+        # I am disabling the spotify action until we add a better way
+        # to configure which actions do and don't execute.
+        #actions = [Spotify(args.song, args.keepsong), DimScreen()]
+        actions = [DimScreen()]
 
     for action in actions:
         action.start()
